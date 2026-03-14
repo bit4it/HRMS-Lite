@@ -13,6 +13,13 @@ export type Attendance = {
   status: 'Present' | 'Absent'
 }
 
+export type Summary = {
+  total_employees: number
+  present_today: number
+  absent_today: number
+  total_departments: number
+}
+
 export type ApiError = {
   detail: string
 }

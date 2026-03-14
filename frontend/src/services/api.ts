@@ -1,5 +1,5 @@
 import axios from 'axios'
-import type { Attendance, Employee } from '../types/hrms'
+import type { Attendance, Employee, Summary } from '../types/hrms'
 
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL || (import.meta.env.PROD ? '/api' : 'http://localhost:8000'),
@@ -11,6 +11,11 @@ const api = axios.create({
 export const hrmsApi = {
   async listEmployees() {
     const { data } = await api.get<Employee[]>('/employees')
+    return data
+  },
+
+  async getSummary() {
+    const { data } = await api.get<Summary>('/summary')
     return data
   },
 

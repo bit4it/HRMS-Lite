@@ -1,10 +1,15 @@
-from fastapi import FastAPI, Request, status
+from datetime import date
+
+from fastapi import Depends, FastAPI, Request, status
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
 from app.core.config import get_settings
-from app.db.database import Base, engine
+from sqlalchemy.orm import Session
+
+from app.db.database import Base, engine, get_db
+from app.models import Attendance, Employee
 from app.routers import attendance, employees
 
 settings = get_settings()
@@ -28,6 +33,29 @@ def on_startup() -> None:
 @app.get("/health")
 def health_check() -> dict[str, str]:
     return {"status": "ok"}
+
+
+@app.get("/summary")
+def get_summary(db: Session = Depends(get_db)) -> dict:
+    today = date.today()
+    total_employees = db.query(Employee).count()
+    present_today = (
+        db.query(Attendance)
+        .filter(Attendance.date == today, Attendance.status == "Present")
+        .count()
+    )
+    absent_today = (
+        db.query(Attendance)
+        .filter(Attendance.date == today, Attendance.status == "Absent")
+        .count()
+    )
+    total_departments = db.query(Employee.department).distinct().count()
+    return {
+        "total_employees": total_employees,
+        "present_today": present_today,
+        "absent_today": absent_today,
+        "total_departments": total_departments,
+    }
 
 
 @app.exception_handler(RequestValidationError)
