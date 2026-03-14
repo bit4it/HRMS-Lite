@@ -1,0 +1,6 @@
+{
+  "rewrites": [
+    { "source": "/api/:path*", "destination": "http://nozomi.proxy.rlwy.net:19591/:path*" },
+    { "source": "/(.*)", "destination": "/index.html" }
+  ]
+}
